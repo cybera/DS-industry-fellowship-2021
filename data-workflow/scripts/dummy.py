@@ -63,7 +63,7 @@ if __name__ == '__main__':
     
     #print_hello_contributors()
     
-    int1 = 5
+    int1 = 3
     int2 = 2
     
     # Power method
