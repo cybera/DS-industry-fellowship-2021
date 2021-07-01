@@ -124,23 +124,3 @@ if __name__=="__main__":
         print("Could not complete query")
         sys.exit(0)
         
-    try:
-    
-        # # From start date to end date intensity stats
-        to_o = datetime.now()
-        from_o_pref = to_o + relativedelta(months=-1)
-        
-        to_f = from_o_pref.strftime("%Y-%m-%dT%H:%MZ")
-        from_o_f = to_o.strftime("%Y-%m-%dT%H:%MZ")
-        entry_pt = "intensity/stats/"+to_f+"/"+from_o_f
-        query_resp_3,time_q3 = query_entry_pt(base_url + entry_pt)
-        print(time_q3)
-        
-        
-        # Generate dataframe
-        format_json_resp(query_resp_3,time_q3,"data",date_f,time_f, \
-                                        output_dir,base_url,entry_pt)
-            
-    except:
-        print("Could not complete query")
-        sys.exit(0)

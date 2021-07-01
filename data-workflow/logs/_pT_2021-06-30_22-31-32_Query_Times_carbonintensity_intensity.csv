@@ -1,0 +1,2 @@
+,from,to,intensity.forecast,intensity.actual,intensity.index,query.name,query.lasted,query.date,query.time
+0,2021-07-01T05:00Z,2021-07-01T05:30Z,190,193,moderate,intensity,0.766685962677002,2021-06-30,22:31:32
