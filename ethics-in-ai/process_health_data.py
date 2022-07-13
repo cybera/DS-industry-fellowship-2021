@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
 # SKLEARN
+import sklearn
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -139,14 +140,13 @@ def resample_dataset(X_train, Y_train, A_train):
     
     return X_train, Y_train, A_train
     
-    
-def train_model(df):
+def train_model(df, test_size=0.5, seed=445):
     
     df_c = df.copy()
     
     # Set random seed
     
-    random_seed = 445
+    random_seed = seed
     np.random.seed(random_seed)
     
     # Set target variable, demographic and data sensitivity
@@ -159,7 +159,7 @@ def train_model(df):
     # We next drop the features that we don't want to use in 
         # our model and expand the categorical features into 0/1 indicators ("dummies").
     X = pd.get_dummies(df_c.drop(columns=[
-            "race",
+            #"race",
             "discharge_disposition_id",
             "readmitted",
             "readmit_binary",
@@ -175,7 +175,51 @@ def train_model(df):
                                                                             Y,
                                                                             A,
                                                                             df,
-                                                                            test_size=0.50,
+                                                                            test_size=test_size,
+                                                                            stratify=Y,
+                                                                            random_state=random_seed)
+    
+    
+    return [X_train, X_test, Y_train, Y_test, A_train, A_test, df_train, df_test, X]
+
+def train_test_class_split(df, test_size=0.7, drop_race=True, seed=445):
+    
+    df_c = df.copy()
+    
+    # Set random seed
+    
+    random_seed = seed
+    np.random.seed(random_seed)
+    
+    # Set target variable, demographic and data sensitivity
+    target_variable = "readmit_30_days"
+    demographic = ["race", "gender"]
+    sensitive = ["race"]
+    
+    Y, A = df_c.loc[:, target_variable], df.loc[:, sensitive]
+    
+    # We next drop the features that we don't want to use in 
+        # our model and expand the categorical features into 0/1 indicators ("dummies").
+    to_drop_cols = [
+        "discharge_disposition_id",
+        "readmitted",
+        "readmit_binary",
+        "readmit_30_days"
+    ]
+    if drop_race:
+        to_drop_cols.append('race')
+    X = pd.get_dummies(df_c.drop(columns=to_drop_cols))
+
+    #display(X)
+    
+    ## Split data intro training and testing data
+    
+    X_train, X_test, Y_train, Y_test, A_train, A_test, df_train, df_test = train_test_split(
+                                                                            X,
+                                                                            Y,
+                                                                            A,
+                                                                            df,
+                                                                            test_size=test_size,
                                                                             stratify=Y,
                                                                             random_state=random_seed)
     
@@ -218,11 +262,14 @@ def plot_descriptive_stats(A_train_bal, Y_train_bal, A_test, Y_test):
     return [sensitive_train, outcome_train, sensitive_test, outcome_test]
 
 if __name__ == '__main__':
+    plt.rcParams['figure.figsize'] = [8,6]
+    plt.rcParams['font.size'] = 14
+    plt.rcParams['figure.autolayout'] = True 
     
     print("Loading data")
     df = pd.read_csv("https://raw.githubusercontent.com/fairlearn/talks/main/2021_scipy_tutorial/data/diabetic_preprocessed.csv")
-    display(df.head())
-    display(df.info())
+    #display(df.head())
+    #display(df.info())
     
     print("Assigning category-based columns")
     # Show the values of all binary and categorical features
